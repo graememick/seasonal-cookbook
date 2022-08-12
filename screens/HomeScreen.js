@@ -50,22 +50,21 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text>recipes: {recipes[0].name}</Text>
       <ScrollView>
         {
           recipes.map(item => (
-            // <View key={item.name}>
-              <text>{item?.name}</text>
-            // </View>
+            <View key={item.name}>
+              <Text>{item?.name}</Text>
+             </View>
           ))}
       </ScrollView>
-      {/* <Text>Email: {auth.currentUser?.email}</Text>
+      <Text>Email: {auth.currentUser?.email}</Text>
       <TouchableOpacity
         onPress={handleSignOut}
         style={styles.button}
       >
         <Text style={styles.buttonText}>Sign out</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </View>
   )
 }
