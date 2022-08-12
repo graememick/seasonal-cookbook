@@ -8,35 +8,7 @@ import { ListItem } from 'react-native-elements'
 
 const HomeScreen = () => {
   const navigation = useNavigation()
-  const [recipes, setRecipes] = useState([{name: "tofu", description: "food"},{name: "rice", description: "food"}])
 
-  useEffect(() => {
-    axios
-      .get("https://seasonal-cookbook.herokuapp.com/api/recipes/Pot-au-feu")
-      .then((response) => {
-        setRecipes([response.data])
-      });
-  }, []);
-
-  // const displayRecipe = (recipesList) => {
-  //     return (
-  //       <FlatList
-  //       ItemSeparatorComponent={() => <View style={styles.separator} />}
-  //       data={recipesList}
-  //       keyExtractor={(item, index) => index.toString()}
-  //       renderItem={({item}) => {
-  //         return (
-  //           <ListItem
-  //           title={`${item.name}`}
-  //           subtitle={`${item.description}`}
-  //           onPress={() => { }}
-  //           />
-  //         );
-  //       }
-  //     }
-  //     />
-  //     );
-  //   }
        
 
   const handleSignOut = () => {
@@ -47,17 +19,27 @@ const HomeScreen = () => {
       })
       .catch(error => alert(error.message))
   }
+  const handleGetAllRecipes = () => {
+    navigation.replace("GetAllRecipes")
+  }
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      {/* {displayRecipe(recipes)} */}
+      {/* <ScrollView>
         {
           recipes.map(item => (
             <View key={item.name}>
               <Text>{item?.name}</Text>
              </View>
           ))}
-      </ScrollView>
+      </ScrollView> */}
+      <TouchableOpacity
+          onPress={handleGetAllRecipes}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Get All Recipes</Text>
+        </TouchableOpacity>
       <Text>Email: {auth.currentUser?.email}</Text>
       <TouchableOpacity
         onPress={handleSignOut}
