@@ -1,11 +1,17 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, TextInput, FlatList, ScrollView } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Button, ScrollView, Alert } from 'react-native'
 import { auth } from '../firebase'
 import axios from 'axios'
-import { ListItem } from 'react-native-elements'
 import RNPickerSelect from "react-native-picker-select";
 import moment from 'moment'; 
+import * as ImagePicker from 'expo-image-picker';
+import firebase from 'firebase/compat/app';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import uuid from "uuid";
+
+
+
 
 
 
@@ -15,6 +21,8 @@ const AddRecipe = () => {
     const [description, setDescription] = useState("")
     const [instructions, setInstructions] = useState("")
     const [season, setSeason] = useState("")
+    const [uploading, setUploading] = useState(false)
+    const [imageURI, setImageURI] = useState("")
 
   
     const currentDate = moment().format("YYYY/MM/DD");
@@ -30,7 +38,8 @@ const AddRecipe = () => {
         description: description,
         intructions: instructions,
         season: season,
-        entry_created: currentDate
+        entry_created: currentDate,
+        images_url: imageURI
       })
       .then(function (response) {
         alert(`Recipe for ${recipeName} has been submitted`)
@@ -41,6 +50,59 @@ const AddRecipe = () => {
       });
       ;
       }
+  
+      const chooseImage = async () => {
+        let pickerResult = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: true,
+          aspect: [4, 3],
+        });
+        
+        handleImagePicked(pickerResult);
+      };
+
+    const handleImagePicked = async (pickerResult) => {
+      try {
+        setUploading(true);
+  
+        if (!pickerResult.cancelled) {
+          const uploadUrl = await uploadImage(pickerResult.uri);
+          setImageURI(uploadUrl);
+          Alert.alert("Photo succesfully uploaded")
+        }
+      } catch (err) {
+        console.log(err);
+        alert("Upload failed, sorry :(");
+      } finally {
+        setUploading(false);
+      }
+    };
+
+    async function uploadImage (uri) {
+      // Why are we using XMLHttpRequest? See:
+      // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function (e) {
+          console.log(e);
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null);
+      });
+    
+      const fileRef = ref(getStorage(), uuid.v4());
+      await uploadBytes(fileRef, blob);
+    
+      // We're done with the blob, close and release it
+      blob.close();
+    
+      const downURL = await getDownloadURL(fileRef);
+      return downURL
+    }
 
 
     const handleSignOut = () => {
@@ -55,6 +117,7 @@ const AddRecipe = () => {
   return (
     <View style={styles.container}>
       <Text>Add Recipe</Text>
+      <Button title="Add image" onPress={chooseImage} />
       <TextInput
       placeholder="Recipe Name"
       // value={name}
