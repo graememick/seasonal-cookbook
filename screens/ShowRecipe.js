@@ -1,19 +1,22 @@
-import { useNavigation } from '@react-navigation/core'
+import { useNavigation} from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, Header, FlatList, ScrollView } from 'react-native'
 import { auth } from '../firebase'
 import axios from 'axios'
-import { ListItem } from 'react-native-elements'
+import { useRoute } from '@react-navigation/core'
 
-const GetAllRecipes = () => {
+
+const ShowRecipe = () => {
     const navigation = useNavigation()
-    const [recipes, setRecipes] = useState([{name: "tofu", description: "food"},{name: "rice", description: "food"}])
+    const [recipe, setRecipe] = useState([])
+    const route = useRoute();
+
 
     useEffect(() => {
       axios
-        .get("https://seasonal-cookbook.herokuapp.com/api/recipes/Pot-au-feu")
+        .get(`https://seasonal-cookbook.herokuapp.com/api/recipes/${route.params.recipeName}`)
         .then((response) => {
-          setRecipes([response.data])
+          setRecipe(response.data)
         });
     }, []);
 
@@ -26,41 +29,31 @@ const GetAllRecipes = () => {
           .catch(error => alert(error.message))
         }
   
-    const displayRecipe = (recipes) => {
+    const displayRecipe = (recipe) => {
         return (
-            <FlatList
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          data={recipes}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item}) => {
-            return (
-              <View key={item.name}>
-                <Text>{item?.name}</Text>
+            <View>
+                <Text>Recipe: {recipe.name}</Text>
+                <Text>Description: {recipe.description}</Text>
+                <Text>Instructions: {recipe.intructions}</Text>
+                {/* <Text>Instructions: {recipe.ingredients-string}</Text> */}
+                <Text>Season: {recipe.season}</Text>
                </View>
-              // <ListItem
-              // title={`${item.name}`}
-              // subtitle={`${item.description}`}
-              // onPress={() => { }}
-              // />
             );
-          }
-        }
-        />
-        );
-      }
+        };
 
   return (
     <View style={styles.container}>
-      {displayRecipe(recipes)}
-      {/* <ScrollView>
-        {
-          recipes.map(item => (
-            <View key={item.name}>
-              <Text>{item?.name}</Text>
-             </View>
-          ))}
-      </ScrollView> */}
+      {displayRecipe(recipe)}
       <Text>Email: {auth.currentUser?.email}</Text>
+      <Text>Route:{route.params.recipeName}</Text>
+      <TouchableOpacity
+          onPress={() => {
+            navigation.replace("Home")
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Home</Text>
+        </TouchableOpacity>
       <TouchableOpacity
         onPress={handleSignOut}
         style={styles.button}
@@ -71,7 +64,7 @@ const GetAllRecipes = () => {
   )
 }
 
-export default GetAllRecipes
+export default ShowRecipe
 
 const styles = StyleSheet.create({
     container: {
@@ -99,4 +92,12 @@ const styles = StyleSheet.create({
       height: 1,
       backgroundColor: "grey"
     },
+    recipeButton: {
+      backgroundColor: '#white',
+      width: '80%',
+      padding: 5,
+      borderRadius: 5,
+      alignItems: 'center',
+      marginTop: 5,
+    }
   })

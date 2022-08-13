@@ -19,9 +19,10 @@ const HomeScreen = () => {
       })
       .catch(error => alert(error.message))
   }
-  const handleGetAllRecipes = () => {
-    navigation.replace("GetAllRecipes")
-  }
+  // const handleSumemer = () => {
+  //   navigation.replace("Summer")
+  // }
+  
 
   return (
     <View style={styles.container}>
@@ -34,11 +35,45 @@ const HomeScreen = () => {
              </View>
           ))}
       </ScrollView> */}
+       <TouchableOpacity
+        onPress={() => {
+          navigation.replace("Add Recipe")
+        }}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Add Recipe</Text>
+      </TouchableOpacity>
       <TouchableOpacity
-          onPress={handleGetAllRecipes}
+          onPress={() => {
+            navigation.replace("Spring")
+          }}
           style={styles.button}
         >
-          <Text style={styles.buttonText}>Get All Recipes</Text>
+          <Text style={styles.buttonText}>Spring</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.replace("Summer")
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Summer</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.replace("Autumn")
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Autumn</Text>
+        </TouchableOpacity>
+      <TouchableOpacity
+          onPress={() => {
+            navigation.replace("Winter")
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Winter</Text>
         </TouchableOpacity>
       <Text>Email: {auth.currentUser?.email}</Text>
       <TouchableOpacity
