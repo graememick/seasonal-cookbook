@@ -1,6 +1,6 @@
 import { useNavigation} from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, Header, FlatList, ScrollView } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, Header, FlatList, ScrollView } from 'react-native'
 import { auth } from '../firebase'
 import axios from 'axios'
 import { useRoute } from '@react-navigation/core'
@@ -9,14 +9,15 @@ import { useRoute } from '@react-navigation/core'
 const ShowRecipe = () => {
     const navigation = useNavigation()
     const [recipe, setRecipe] = useState([])
+    const [imageUrl, setImageUrl] = useState("")
     const route = useRoute();
-
 
     useEffect(() => {
       axios
         .get(`https://seasonal-cookbook.herokuapp.com/api/recipes/${route.params.recipeName}`)
         .then((response) => {
           setRecipe(response.data)
+          setImageUrl(response.data.images_url)
         });
     }, []);
 
@@ -31,12 +32,15 @@ const ShowRecipe = () => {
   
     const displayRecipe = (recipe) => {
         return (
-            <View>
-                <Text>Recipe: {recipe.name}</Text>
-                <Text>Description: {recipe.description}</Text>
-                <Text>Instructions: {recipe.intructions}</Text>
-                {/* <Text>Instructions: {recipe.ingredients-string}</Text> */}
-                <Text>Season: {recipe.season}</Text>
+            <View >
+                <Image
+      style={{width: 100, height: 100}}
+      source={{uri: imageUrl ? imageUrl : null}}
+    />
+                <Text  >Recipe: {recipe.name}</Text>
+                <Text  >Description: {recipe.description}</Text>
+                <Text >Instructions: {recipe.intructions}</Text>
+                <Text  > style={styles.text} Season: {recipe.season}</Text>
                </View>
             );
         };
@@ -44,8 +48,6 @@ const ShowRecipe = () => {
   return (
     <View style={styles.container}>
       {displayRecipe(recipe)}
-      <Text>Email: {auth.currentUser?.email}</Text>
-      <Text>Route:{route.params.recipeName}</Text>
       <TouchableOpacity
           onPress={() => {
             navigation.replace("Home")

@@ -13,7 +13,7 @@ const Spring = () => {
         .get("https://seasonal-cookbook.herokuapp.com/api/recipes/")
         .then((response) => {
           const recipes = 
-            response.data.filter((recipe) =>  (recipe.user_id === auth.currentUser?.uid && recipe.season === "Spring" || recipe.season === "All Seasons"));
+            response.data.filter((recipe) =>  (recipe.user_id === auth.currentUser?.uid && recipe.season === "Summer" || recipe.season === "All Seasons"));
           setRecipes(recipes)
         });
     }, []);
@@ -86,6 +86,7 @@ export default Spring
 
 const styles = StyleSheet.create({
     container: {
+      fontSize: 16,
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center'

@@ -14,7 +14,6 @@ import uuid from "uuid";
 
 
 
-
 const AddRecipe = () => {
     const navigation = useNavigation()
     const [recipeName, setRecipeName] = useState("")
@@ -29,6 +28,13 @@ const AddRecipe = () => {
 
     let userId = auth.currentUser?.uid
 
+    const handleShowRecipe = (recipeName) => {
+      navigation.replace("Recipe",{
+recipeName              })
+
+  }
+
+
 
     const handleSubmission = () => {
       axios
@@ -42,8 +48,11 @@ const AddRecipe = () => {
         images_url: imageURI
       })
       .then(function (response) {
+        console.log("imageURI",imageURI)
+        console.log("typeof imageURI",typeof imageURI)
+
         alert(`Recipe for ${recipeName} has been submitted`)
-        navigation.replace("Home")
+        handleShowRecipe(recipeName)
       })
      .catch(function (error) {
         console.log(error);
@@ -57,7 +66,7 @@ const AddRecipe = () => {
           aspect: [4, 3],
         });
         
-        handleImagePicked(pickerResult);
+       return await handleImagePicked(pickerResult);
       };
 
     const handleImagePicked = async (pickerResult) => {
@@ -66,8 +75,7 @@ const AddRecipe = () => {
   
         if (!pickerResult.cancelled) {
           const uploadUrl = await uploadImage(pickerResult.uri);
-          setImageURI(uploadUrl);
-          Alert.alert("Photo succesfully uploaded")
+          return uploadUrl;
         }
       } catch (err) {
         console.log(err);
@@ -76,6 +84,7 @@ const AddRecipe = () => {
         setUploading(false);
       }
     };
+
 
     async function uploadImage (uri) {
       // Why are we using XMLHttpRequest? See:
@@ -100,7 +109,13 @@ const AddRecipe = () => {
       // We're done with the blob, close and release it
       blob.close();
     
-      const downURL = await getDownloadURL(fileRef);
+      const downURL = getDownloadURL(fileRef).then((url) =>{
+        setImageURI(url)
+        console.log("downURL",downURL)
+        console.log("typeof imageURI",typeof downURL)
+      }
+      )
+     
       return downURL
     }
 
@@ -173,6 +188,7 @@ export default AddRecipe
 
 const styles = StyleSheet.create({
     container: {
+      fontSize: 16,
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center'
